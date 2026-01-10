@@ -1,5 +1,6 @@
 package com.example.burgerconstructorbackend.order;
 
+import com.example.burgerconstructorbackend.order_ingredient.OrderIngredient;
 import com.example.burgerconstructorbackend.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -31,6 +33,9 @@ public class Order {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderIngredient> orderIngredients;
 
     // для автоматического заполнения???????
     @PrePersist
