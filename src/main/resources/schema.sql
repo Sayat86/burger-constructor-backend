@@ -32,7 +32,7 @@ CREATE TABLE ingredients
 CREATE TABLE orders
 (
     id         UUID PRIMARY KEY,
-    user_id    BIGINT      REFERENCES users (id) ON DELETE SET NULL,
+    user_id    UUID      REFERENCES users (id) ON DELETE SET NULL,
 
     status     VARCHAR(50) NOT NULL,
     name       VARCHAR(255),
