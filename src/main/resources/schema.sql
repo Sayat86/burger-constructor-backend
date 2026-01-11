@@ -51,3 +51,11 @@ CREATE TABLE order_ingredients
 
     PRIMARY KEY (order_id, ingredient_id)
 );
+
+CREATE TABLE refresh_tokens (
+                                id UUID PRIMARY KEY,
+                                token VARCHAR(512) NOT NULL UNIQUE,
+                                user_id UUID NOT NULL REFERENCES users(id),
+                                expires_at TIMESTAMP NOT NULL
+);
+
