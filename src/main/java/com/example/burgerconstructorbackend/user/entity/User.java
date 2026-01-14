@@ -1,4 +1,4 @@
-package com.example.burgerconstructorbackend.user;
+package com.example.burgerconstructorbackend.user.entity;
 
 import com.example.burgerconstructorbackend.order.Order;
 import jakarta.persistence.*;

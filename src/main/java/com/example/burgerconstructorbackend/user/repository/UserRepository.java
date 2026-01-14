@@ -1,5 +1,6 @@
-package com.example.burgerconstructorbackend.user;
+package com.example.burgerconstructorbackend.user.repository;
 
+import com.example.burgerconstructorbackend.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

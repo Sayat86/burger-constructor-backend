@@ -1,7 +1,6 @@
 package com.example.burgerconstructorbackend.security;
 
-import com.example.burgerconstructorbackend.user.User;
-import com.example.burgerconstructorbackend.user.UserRepository;
+import com.example.burgerconstructorbackend.user.repository.UserRepository;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,7 +8,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -24,10 +26,11 @@ public class JwtFilter extends OncePerRequestFilter {
     private final UserRepository userRepository;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
 
         String header = request.getHeader("Authorization");
 
@@ -40,27 +43,34 @@ public class JwtFilter extends OncePerRequestFilter {
 
                     String email = jwtService.extractEmail(token);
 
-                    User user = userRepository.findByEmail(email).orElse(null);
+                    userRepository.findByEmail(email).ifPresent(user -> {
 
-                    if (user != null) {
+                        List<GrantedAuthority> authorities =
+                                List.of(new SimpleGrantedAuthority("ROLE_USER"));
+
                         UsernamePasswordAuthenticationToken auth =
                                 new UsernamePasswordAuthenticationToken(
                                         user,
                                         null,
-                                        List.of()
+                                        authorities
                                 );
+
+                        auth.setDetails(
+                                new WebAuthenticationDetailsSource()
+                                        .buildDetails(request)
+                        );
 
                         SecurityContextHolder
                                 .getContext()
                                 .setAuthentication(auth);
-                    }
+                    });
                 }
-            } catch (JwtException e) {
-                // ничего не делаем — пользователь будет неаутентифицирован
+            } catch (JwtException ignored) {
             }
         }
 
         filterChain.doFilter(request, response);
     }
 }
+
 

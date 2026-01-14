@@ -1,6 +1,6 @@
-package com.example.burgerconstructorbackend.auth.refresh_token;
+package com.example.burgerconstructorbackend.auth.refresh;
 
-import com.example.burgerconstructorbackend.user.User;
+import com.example.burgerconstructorbackend.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -1,7 +1,9 @@
 package com.example.burgerconstructorbackend.user;
 
-import com.example.burgerconstructorbackend.user.dto.UpdateUserRequest;
+import com.example.burgerconstructorbackend.auth.dto.UpdateUserRequest;
 import com.example.burgerconstructorbackend.user.dto.UserDto;
+import com.example.burgerconstructorbackend.user.entity.User;
+import com.example.burgerconstructorbackend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PatchMapping;

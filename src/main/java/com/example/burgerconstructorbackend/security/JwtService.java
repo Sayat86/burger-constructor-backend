@@ -1,6 +1,7 @@
 package com.example.burgerconstructorbackend.security;
 
-import com.example.burgerconstructorbackend.user.User;
+import com.example.burgerconstructorbackend.user.entity.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -28,58 +29,60 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    // ===== ACCESS TOKEN =====
+    private Claims extractClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSignKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
     public String generateAccessToken(User user) {
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("type", "access")
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + accessExpiration))
+                .setExpiration(
+                        new Date(System.currentTimeMillis() + accessExpiration)
+                )
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // ===== REFRESH TOKEN =====
     public String generateRefreshToken(User user) {
         return Jwts.builder()
                 .setSubject(user.getEmail())
                 .claim("type", "refresh")
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + refreshExpiration))
+                .setExpiration(
+                        new Date(System.currentTimeMillis() + refreshExpiration)
+                )
                 .signWith(getSignKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public String extractEmail(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSignKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        return extractClaims(token).getSubject();
     }
 
     public String extractType(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSignKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get("type", String.class);
+        return extractClaims(token).get("type", String.class);
     }
 
     public boolean isTokenValid(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(getSignKey())
-                    .build()
-                    .parseClaimsJws(token);
+            extractClaims(token);
             return true;
         } catch (JwtException e) {
             return false;
         }
     }
+
+    public long getRefreshExpiration() {
+        return refreshExpiration;
+    }
 }
+
 
 
 

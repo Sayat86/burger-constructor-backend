@@ -1,5 +1,6 @@
-package com.example.burgerconstructorbackend.security;
+package com.example.burgerconstructorbackend.config;
 
+import com.example.burgerconstructorbackend.security.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,7 +26,8 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**", "/password-reset/**").permitAll()
+                        .requestMatchers("/auth/login", "/auth/register", "/auth/token").permitAll()
+                        .requestMatchers("/password-reset/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
@@ -38,6 +40,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
+
 
 
 
