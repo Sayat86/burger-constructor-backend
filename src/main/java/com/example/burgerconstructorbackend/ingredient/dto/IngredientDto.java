@@ -19,3 +19,4 @@ public record IngredientDto(
         @JsonProperty("image_mobile") String imageMobile
 ) {}
 
+

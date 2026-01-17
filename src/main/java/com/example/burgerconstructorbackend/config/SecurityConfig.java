@@ -39,7 +39,8 @@ public class SecurityConfig {
 
                         // ✅ Orders public (по твоей документации)
                         .requestMatchers(HttpMethod.GET, "/orders/all").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/orders/{number}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/orders/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/ingredients").permitAll()
 
                         // остальное — только с токеном
                         .anyRequest().authenticated()
