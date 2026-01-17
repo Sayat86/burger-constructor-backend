@@ -9,5 +9,4 @@ public class BurgerConstructorBackendApplication {
     public static void main(String[] args) {
         SpringApplication.run(BurgerConstructorBackendApplication.class, args);
     }
-
 }
