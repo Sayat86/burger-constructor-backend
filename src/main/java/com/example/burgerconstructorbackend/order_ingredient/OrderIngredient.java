@@ -1,7 +1,7 @@
 package com.example.burgerconstructorbackend.order_ingredient;
 
-import com.example.burgerconstructorbackend.ingredient.Ingredient;
-import com.example.burgerconstructorbackend.order.Order;
+import com.example.burgerconstructorbackend.ingredient.model.Ingredient;
+import com.example.burgerconstructorbackend.order.model.Order;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

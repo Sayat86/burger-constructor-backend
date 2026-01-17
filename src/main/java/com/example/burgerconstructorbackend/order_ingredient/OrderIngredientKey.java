@@ -11,6 +11,5 @@ import java.util.UUID;
 public class OrderIngredientKey implements Serializable {
     private UUID orderId;
     private UUID ingredientId;
-
 }
 

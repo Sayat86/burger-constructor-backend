@@ -1,4 +1,4 @@
-package com.example.burgerconstructorbackend.ingredient;
+package com.example.burgerconstructorbackend.ingredient.model;
 
 import com.example.burgerconstructorbackend.order_ingredient.OrderIngredient;
 import jakarta.persistence.*;

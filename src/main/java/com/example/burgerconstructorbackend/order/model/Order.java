@@ -1,4 +1,4 @@
-package com.example.burgerconstructorbackend.order;
+package com.example.burgerconstructorbackend.order.model;
 
 import com.example.burgerconstructorbackend.order_ingredient.OrderIngredient;
 import com.example.burgerconstructorbackend.user.entity.User;
@@ -10,6 +10,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,12 +20,13 @@ import java.util.UUID;
 @Table(name = "orders")
 public class Order {
     @Id
-    @UuidGenerator
-    private UUID id;
+    private UUID id = UUID.randomUUID();
 
+    @Column(nullable = false)
     private String status;
     private String name;
 
+    @Column(nullable = false, unique = true, insertable = false, updatable = false)
     private int number;
 
     @Column(name = "created_at", nullable = false)
@@ -39,5 +41,5 @@ public class Order {
     private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrderIngredient> orderIngredients;
+    private List<OrderIngredient> orderIngredients = new ArrayList<>();
 }

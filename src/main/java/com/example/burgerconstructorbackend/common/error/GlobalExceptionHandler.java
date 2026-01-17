@@ -3,9 +3,12 @@ package com.example.burgerconstructorbackend.common.error;
 import com.example.burgerconstructorbackend.auth.exception.BadRequestException;
 import com.example.burgerconstructorbackend.auth.exception.NotFoundException;
 import com.example.burgerconstructorbackend.auth.exception.UnauthorizedException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -30,8 +33,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleOther(Exception ex) {
+        ex.printStackTrace(); // временно
         return new ErrorResponse(false, "Internal server error");
     }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleNoResource(NoResourceFoundException ex) {
+        return new ErrorResponse(false, "Not found");
+    }
+
 }
 
 

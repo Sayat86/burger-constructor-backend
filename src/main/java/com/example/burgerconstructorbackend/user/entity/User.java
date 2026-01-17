@@ -1,6 +1,6 @@
 package com.example.burgerconstructorbackend.user.entity;
 
-import com.example.burgerconstructorbackend.order.Order;
+import com.example.burgerconstructorbackend.order.model.Order;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
