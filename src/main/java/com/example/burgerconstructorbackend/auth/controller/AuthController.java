@@ -2,6 +2,7 @@ package com.example.burgerconstructorbackend.auth.controller;
 
 import com.example.burgerconstructorbackend.auth.dto.*;
 import com.example.burgerconstructorbackend.auth.service.AuthService;
+import com.example.burgerconstructorbackend.common.dto.SuccessResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;

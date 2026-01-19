@@ -1,8 +1,12 @@
-drop table if exists refresh_tokens;
-drop table if exists order_ingredients;
-drop table if exists orders;
-drop table if exists ingredients;
-drop table if exists users;
+DROP TABLE IF EXISTS password_reset_tokens;
+DROP TABLE IF EXISTS refresh_tokens;
+DROP TABLE IF EXISTS order_ingredients;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS ingredients;
+DROP TABLE IF EXISTS users;
+
+DROP SEQUENCE IF EXISTS order_number_seq;
+
 
 CREATE TABLE users
 (
@@ -80,5 +84,7 @@ CREATE TABLE password_reset_tokens
 );
 
 CREATE INDEX idx_password_reset_tokens_user_id ON password_reset_tokens(user_id);
+
+
 
 

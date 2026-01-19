@@ -2,10 +2,10 @@ package com.example.burgerconstructorbackend.auth.service;
 
 import com.example.burgerconstructorbackend.auth.dto.*;
 import com.example.burgerconstructorbackend.auth.exception.BadRequestException;
-import com.example.burgerconstructorbackend.auth.exception.NotFoundException;
 import com.example.burgerconstructorbackend.auth.exception.UnauthorizedException;
 import com.example.burgerconstructorbackend.auth.refresh.RefreshToken;
 import com.example.burgerconstructorbackend.auth.refresh.RefreshTokenRepository;
+import com.example.burgerconstructorbackend.common.dto.SuccessResponse;
 import com.example.burgerconstructorbackend.security.JwtService;
 import com.example.burgerconstructorbackend.user.dto.UserResponseDto;
 import com.example.burgerconstructorbackend.user.entity.User;
@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
@@ -83,6 +84,7 @@ public class AuthService {
         );
     }
 
+    @Transactional
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(() -> new UnauthorizedException("User not found"));

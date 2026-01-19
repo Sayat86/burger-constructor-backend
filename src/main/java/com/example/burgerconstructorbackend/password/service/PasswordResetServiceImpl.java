@@ -2,7 +2,7 @@ package com.example.burgerconstructorbackend.password.service;
 
 import com.example.burgerconstructorbackend.password.dto.PasswordResetConfirmRequest;
 import com.example.burgerconstructorbackend.password.dto.PasswordResetRequest;
-import com.example.burgerconstructorbackend.password.dto.SuccessResponse;
+import com.example.burgerconstructorbackend.common.dto.SuccessResponse;
 import com.example.burgerconstructorbackend.password.entity.PasswordResetToken;
 import com.example.burgerconstructorbackend.password.repository.PasswordResetTokenRepository;
 import com.example.burgerconstructorbackend.user.entity.User;

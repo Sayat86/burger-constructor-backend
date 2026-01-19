@@ -2,7 +2,7 @@ package com.example.burgerconstructorbackend.password.controller;
 
 import com.example.burgerconstructorbackend.password.dto.PasswordResetConfirmRequest;
 import com.example.burgerconstructorbackend.password.dto.PasswordResetRequest;
-import com.example.burgerconstructorbackend.password.dto.SuccessResponse;
+import com.example.burgerconstructorbackend.common.dto.SuccessResponse;
 import com.example.burgerconstructorbackend.password.service.PasswordResetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
