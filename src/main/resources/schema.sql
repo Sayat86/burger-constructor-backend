@@ -1,3 +1,12 @@
+DROP TABLE IF EXISTS password_reset_tokens;
+DROP TABLE IF EXISTS refresh_tokens;
+DROP TABLE IF EXISTS order_ingredients;
+DROP TABLE IF EXISTS orders;
+DROP TABLE IF EXISTS ingredients;
+DROP TABLE IF EXISTS users;
+
+DROP SEQUENCE IF EXISTS order_number_seq;
+
 
 CREATE TABLE users
 (
@@ -10,7 +19,6 @@ CREATE TABLE users
     updated_at    TIMESTAMP    NOT NULL DEFAULT now()
 );
 
-
 CREATE TABLE ingredients
 (
     id            UUID PRIMARY KEY,
@@ -20,7 +28,7 @@ CREATE TABLE ingredients
     proteins      INTEGER  NOT NULL,
     fat           INTEGER  NOT NULL,
     carbohydrates INTEGER  NOT NULL,
-    calories      INTEGER        NOT NULL,
+    calories      INTEGER  NOT NULL,
 
     price         NUMERIC(10, 2) NOT NULL,
 
@@ -29,15 +37,22 @@ CREATE TABLE ingredients
     image_mobile  VARCHAR(1000) NOT NULL
 );
 
+-- ✅ sequence для номера заказа
+CREATE SEQUENCE IF NOT EXISTS order_number_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO CYCLE;
+
 CREATE TABLE orders
 (
     id         UUID PRIMARY KEY,
-    user_id    BIGINT      REFERENCES users (id) ON DELETE SET NULL,
+    user_id    UUID REFERENCES users (id) ON DELETE SET NULL,
 
     status     VARCHAR(50) NOT NULL,
     name       VARCHAR(255),
 
-    number     INTEGER     NOT NULL UNIQUE,
+    -- ✅ number генерится БД автоматически
+    number     INTEGER NOT NULL UNIQUE DEFAULT nextval('order_number_seq'),
 
     created_at TIMESTAMP   NOT NULL DEFAULT now(),
     updated_at TIMESTAMP   NOT NULL DEFAULT now()
@@ -51,3 +66,25 @@ CREATE TABLE order_ingredients
 
     PRIMARY KEY (order_id, ingredient_id)
 );
+
+CREATE TABLE refresh_tokens
+(
+    id         UUID PRIMARY KEY,
+    token      VARCHAR(512) NOT NULL UNIQUE,
+    user_id    UUID NOT NULL REFERENCES users(id),
+    expires_at TIMESTAMP NOT NULL
+);
+
+CREATE TABLE password_reset_tokens
+(
+    id         UUID PRIMARY KEY,
+    token      VARCHAR(512) NOT NULL UNIQUE,
+    user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    expires_at TIMESTAMP NOT NULL
+);
+
+CREATE INDEX idx_password_reset_tokens_user_id ON password_reset_tokens(user_id);
+
+
+
+
