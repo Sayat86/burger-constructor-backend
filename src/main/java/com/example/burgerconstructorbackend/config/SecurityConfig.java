@@ -40,7 +40,7 @@ public class SecurityConfig {
                         ).permitAll()
 
                         // Auth
-                        .requestMatchers("/auth/login", "/auth/register", "/auth/token").permitAll()
+                        .requestMatchers("/auth/login", "/auth/register", "/auth/token", "/auth/logout").permitAll()
                         .requestMatchers("/password-reset/**").permitAll()
 
                         // ✅ Public endpoints
@@ -59,7 +59,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000")); // при необходимости укажи конкретный домен
+        config.setAllowedOrigins(List.of("*")); // при необходимости укажи конкретный домен
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(false);
