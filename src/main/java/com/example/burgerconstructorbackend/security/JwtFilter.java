@@ -34,9 +34,17 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String header = request.getHeader("Authorization");
 
-        if (header != null && header.startsWith("Bearer ")) {
-            String token = header.substring(7);
+        String token = null;
+        if (header != null && !header.isBlank()) {
+            header = header.trim();
+            if (header.startsWith("Bearer ")) {
+                token = header.substring(7).trim();
+            } else {
+                token = header;
+            }
+        }
 
+        if (token != null) {
             try {
                 if (jwtService.isTokenValid(token)
                         && "access".equals(jwtService.extractType(token))) {
