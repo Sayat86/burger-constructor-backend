@@ -9,6 +9,7 @@ import com.example.burgerconstructorbackend.password.repository.PasswordResetTok
 import com.example.burgerconstructorbackend.user.entity.User;
 import com.example.burgerconstructorbackend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PasswordResetServiceImpl implements PasswordResetService {
@@ -36,21 +38,36 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "email must not be blank");
         }
 
-        userRepository.findByEmail(request.email()).ifPresent(user -> {
+        log.info("Reset requested: {}", request.email());
+
+        userRepository.findByEmail(request.email()).ifPresentOrElse(user -> {
+            log.info("User found: {}", user.getId());
+
             tokenRepository.deleteByUser_Id(user.getId());
 
-            String token = UUID.randomUUID().toString();
-
             PasswordResetToken prt = new PasswordResetToken();
-            prt.setToken(token);
+            prt.setToken(UUID.randomUUID().toString());
             prt.setUser(user);
             prt.setExpiresAt(LocalDateTime.now().plus(TTL));
 
-            tokenRepository.save(prt);
+            tokenRepository.saveAndFlush(prt);
+            log.info("Reset token saved, id={}", prt.getId());
 
-            // ✅ отправка email
-            mailService.sendPasswordResetCode(user.getEmail(), token);
-        });
+//            mailService.sendPasswordResetCode(user.getEmail(), prt.getToken());
+//            log.info("Reset mail sent");
+//        }, () -> log.info("User NOT found"));
+
+            // Вариант C: если SMTP не настроен — не валим запрос
+            try {
+                mailService.sendPasswordResetCode(user.getEmail(), prt.getToken());
+                log.info("Reset mail sent");
+            } catch (Exception e) {
+                log.error("Reset mail send failed: {}", e.getMessage());
+            }
+        }, () -> log.info("User NOT found for email={}", request.email()));
+
+        // По безопасности обычно всегда возвращают success=true,
+        // чтобы нельзя было понять, существует ли email в системе.
 
         return new SuccessResponse(true);
     }

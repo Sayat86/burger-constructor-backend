@@ -35,8 +35,9 @@ services:
       # --- MAIL (Gmail SMTP) ---
       SPRING_MAIL_HOST: smtp.gmail.com
       SPRING_MAIL_PORT: 587
-      SPRING_MAIL_USERNAME: your_email@gmail.com
-      SPRING_MAIL_PASSWORD: your_app_password
+      SPRING_MAIL_USERNAME: burger.test.reset@gmail.com
+      SPRING_MAIL_PASSWORD: burger2535
+      APP_MAIL_FROM: burger.test.reset@gmail.com
       SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
       SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
 

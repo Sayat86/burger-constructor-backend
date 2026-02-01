@@ -1,9 +1,33 @@
 spring:
+  application:
+    name: burger-constructor-backend
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/burger_constructor}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:123456}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    show-sql: ${JPA_SHOW_SQL:false}
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+  sql:
+    init:
+      mode: never
+      schema-locations: classpath:schema.sql
+
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: your_email@gmail.com
-    password: your_app_password
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
@@ -13,4 +37,23 @@ spring:
 
 app:
   mail:
-    from: your_email@gmail.com
+    # По умолчанию берём MAIL_USERNAME, чтобы не дублировать
+    from: ${MAIL_FROM:${MAIL_USERNAME:}}
+
+jwt:
+  secret: ${JWT_SECRET:dev-secret-change-me}
+  access-expiration: ${JWT_ACCESS_EXPIRATION:900000}
+  refresh-expiration: ${JWT_REFRESH_EXPIRATION:86400000}
+
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-message: always
+    include-stacktrace: always
+
+logging:
+  level:
+    org.springframework.web: ${LOG_WEB_LEVEL:DEBUG}
+    org.springframework.security: ${LOG_SECURITY_LEVEL:DEBUG}
+
+

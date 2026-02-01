@@ -4,6 +4,7 @@ import com.example.burgerconstructorbackend.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.UuidGenerator;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -15,7 +16,9 @@ import java.util.UUID;
 public class PasswordResetToken {
 
     @Id
-    private UUID id = UUID.randomUUID();
+    @UuidGenerator
+    private UUID id;
+
 
     @Column(nullable = false, unique = true, length = 512)
     private String token;
