@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   db:
     image: postgres:16
@@ -24,14 +26,27 @@ services:
       db:
         condition: service_healthy
     environment:
+      # --- DB ---
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/burger_constructor
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: 123456
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+
+      # --- MAIL (Gmail SMTP) ---
+      SPRING_MAIL_HOST: smtp.gmail.com
+      SPRING_MAIL_PORT: 587
+      SPRING_MAIL_USERNAME: your_email@gmail.com
+      SPRING_MAIL_PASSWORD: your_app_password
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
+
+      # --- APP ---
+      APP_MAIL_FROM: your_email@gmail.com
     ports:
       - "8080:8080"
 
 volumes:
   db_data:
+
 
 

@@ -1,5 +1,6 @@
 package com.example.burgerconstructorbackend.password.service;
 
+import com.example.burgerconstructorbackend.auth.service.MailService;
 import com.example.burgerconstructorbackend.password.dto.PasswordResetConfirmRequest;
 import com.example.burgerconstructorbackend.password.dto.PasswordResetRequest;
 import com.example.burgerconstructorbackend.common.dto.SuccessResponse;
@@ -24,6 +25,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
     private static final Duration TTL = Duration.ofMinutes(30);
 
@@ -34,13 +36,11 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "email must not be blank");
         }
 
-        // ВАЖНО: по безопасности лучше ВСЕГДА возвращать success:true,
-        // даже если email не найден (чтобы не палить существование аккаунта)
         userRepository.findByEmail(request.email()).ifPresent(user -> {
-            // удалим старые токены пользователя (чтобы был один активный)
-            tokenRepository.deleteByUserId(user.getId());
+            tokenRepository.deleteByUser_Id(user.getId());
 
-            String token = UUID.randomUUID() + "-" + UUID.randomUUID(); // простой, но норм
+            String token = UUID.randomUUID().toString();
+
             PasswordResetToken prt = new PasswordResetToken();
             prt.setToken(token);
             prt.setUser(user);
@@ -48,8 +48,8 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
             tokenRepository.save(prt);
 
-            // тут обычно отправка email, пока — лог:
-            System.out.println("PASSWORD RESET TOKEN for " + user.getEmail() + ": " + token);
+            // ✅ отправка email
+            mailService.sendPasswordResetCode(user.getEmail(), token);
         });
 
         return new SuccessResponse(true);
@@ -77,8 +77,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         userRepository.save(user);
 
-        // токен одноразовый
-        tokenRepository.delete(prt);
+        tokenRepository.deleteByUser_Id(user.getId());
 
         return new SuccessResponse(true);
     }
