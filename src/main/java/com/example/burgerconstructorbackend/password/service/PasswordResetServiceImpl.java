@@ -53,21 +53,9 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             tokenRepository.saveAndFlush(prt);
             log.info("Reset token saved, id={}", prt.getId());
 
-//            mailService.sendPasswordResetCode(user.getEmail(), prt.getToken());
-//            log.info("Reset mail sent");
-//        }, () -> log.info("User NOT found"));
-
-            // Вариант C: если SMTP не настроен — не валим запрос
-            try {
-                mailService.sendPasswordResetCode(user.getEmail(), prt.getToken());
-                log.info("Reset mail sent");
-            } catch (Exception e) {
-                log.error("Reset mail send failed: {}", e.getMessage());
-            }
-        }, () -> log.info("User NOT found for email={}", request.email()));
-
-        // По безопасности обычно всегда возвращают success=true,
-        // чтобы нельзя было понять, существует ли email в системе.
+            mailService.sendPasswordResetCode(user.getEmail(), prt.getToken());
+            log.info("Reset mail sent");
+        }, () -> log.info("User NOT found"));
 
         return new SuccessResponse(true);
     }

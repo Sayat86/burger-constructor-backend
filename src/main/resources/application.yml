@@ -37,7 +37,6 @@ spring:
 
 app:
   mail:
-    # По умолчанию берём MAIL_USERNAME, чтобы не дублировать
     from: ${MAIL_FROM:${MAIL_USERNAME:}}
 
 jwt:
