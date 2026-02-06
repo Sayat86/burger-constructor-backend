@@ -2,7 +2,6 @@ package com.example.burgerconstructorbackend.security;
 
 import com.example.burgerconstructorbackend.user.entity.User;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -29,7 +28,7 @@ public class JwtService {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    private Claims extractClaims(String token) {
+    Claims extractClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSignKey())
                 .build()
@@ -61,28 +60,9 @@ public class JwtService {
                 .compact();
     }
 
-    public String extractEmail(String token) {
-        return extractClaims(token).getSubject();
-    }
-
-    public String extractType(String token) {
-        return extractClaims(token).get("type", String.class);
-    }
-
-    public boolean isTokenValid(String token) {
-        try {
-            extractClaims(token);
-            return true;
-        } catch (JwtException e) {
-            return false;
-        }
-    }
-
     public long getRefreshExpiration() {
         return refreshExpiration;
     }
 }
-
-
 
 
