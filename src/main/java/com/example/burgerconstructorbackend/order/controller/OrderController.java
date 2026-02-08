@@ -7,10 +7,8 @@ import com.example.burgerconstructorbackend.order.dto.OrdersResponse;
 import com.example.burgerconstructorbackend.order.service.OrderService;
 import com.example.burgerconstructorbackend.user.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/orders")
@@ -25,10 +23,7 @@ public class OrderController {
     }
 
     @GetMapping
-    public OrdersResponse getMyOrders(Authentication authentication) {
-        if (authentication == null || !(authentication.getPrincipal() instanceof User user)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
+    public OrdersResponse getMyOrders(@AuthenticationPrincipal User user) {
         return orderService.getMyOrders(user.getId());
     }
 
@@ -40,11 +35,8 @@ public class OrderController {
     @PostMapping
     public CreateOrderResponse createOrder(
             @RequestBody CreateOrderRequest request,
-            Authentication authentication
+            @AuthenticationPrincipal User user
     ) {
-        if (authentication == null || !(authentication.getPrincipal() instanceof User user)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        }
         return orderService.createOrder(request, user);
     }
 }

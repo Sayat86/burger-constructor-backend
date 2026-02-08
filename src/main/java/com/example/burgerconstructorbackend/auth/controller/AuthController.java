@@ -3,6 +3,7 @@ package com.example.burgerconstructorbackend.auth.controller;
 import com.example.burgerconstructorbackend.auth.dto.*;
 import com.example.burgerconstructorbackend.auth.service.AuthService;
 import com.example.burgerconstructorbackend.common.dto.SuccessResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +27,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public AuthResponse register(@RequestBody RegisterRequest request) {
+    public AuthResponse register(@Valid @RequestBody RegisterRequest request) {
         return authService.register(request);
     }
 

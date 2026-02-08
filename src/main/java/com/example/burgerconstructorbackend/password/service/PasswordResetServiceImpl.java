@@ -1,5 +1,6 @@
 package com.example.burgerconstructorbackend.password.service;
 
+import com.example.burgerconstructorbackend.auth.service.MailService;
 import com.example.burgerconstructorbackend.password.dto.PasswordResetConfirmRequest;
 import com.example.burgerconstructorbackend.password.dto.PasswordResetRequest;
 import com.example.burgerconstructorbackend.common.dto.SuccessResponse;
@@ -8,6 +9,7 @@ import com.example.burgerconstructorbackend.password.repository.PasswordResetTok
 import com.example.burgerconstructorbackend.user.entity.User;
 import com.example.burgerconstructorbackend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,12 +20,14 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PasswordResetServiceImpl implements PasswordResetService {
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
+    private final MailService mailService;
 
     private static final Duration TTL = Duration.ofMinutes(30);
 
@@ -34,23 +38,24 @@ public class PasswordResetServiceImpl implements PasswordResetService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "email must not be blank");
         }
 
-        // ВАЖНО: по безопасности лучше ВСЕГДА возвращать success:true,
-        // даже если email не найден (чтобы не палить существование аккаунта)
-        userRepository.findByEmail(request.email()).ifPresent(user -> {
-            // удалим старые токены пользователя (чтобы был один активный)
-            tokenRepository.deleteByUserId(user.getId());
+        log.info("Reset requested: {}", request.email());
 
-            String token = UUID.randomUUID() + "-" + UUID.randomUUID(); // простой, но норм
+        userRepository.findByEmail(request.email()).ifPresentOrElse(user -> {
+            log.info("User found: {}", user.getId());
+
+            tokenRepository.deleteByUser_Id(user.getId());
+
             PasswordResetToken prt = new PasswordResetToken();
-            prt.setToken(token);
+            prt.setToken(UUID.randomUUID().toString());
             prt.setUser(user);
             prt.setExpiresAt(LocalDateTime.now().plus(TTL));
 
-            tokenRepository.save(prt);
+            tokenRepository.saveAndFlush(prt);
+            log.info("Reset token saved, id={}", prt.getId());
 
-            // тут обычно отправка email, пока — лог:
-            System.out.println("PASSWORD RESET TOKEN for " + user.getEmail() + ": " + token);
-        });
+            mailService.sendPasswordResetCode(user.getEmail(), prt.getToken());
+            log.info("Reset mail sent");
+        }, () -> log.info("User NOT found"));
 
         return new SuccessResponse(true);
     }
@@ -77,8 +82,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         user.setPasswordHash(passwordEncoder.encode(request.password()));
         userRepository.save(user);
 
-        // токен одноразовый
-        tokenRepository.delete(prt);
+        tokenRepository.deleteByUser_Id(user.getId());
 
         return new SuccessResponse(true);
     }

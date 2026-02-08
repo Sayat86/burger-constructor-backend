@@ -87,10 +87,10 @@ public class AuthService {
     @Transactional
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new UnauthorizedException("User not found"));
+                .orElseThrow(() -> new UnauthorizedException("incorrect email or password"));
 
         if (!passwordEncoder.matches(request.password(), user.getPasswordHash())) {
-            throw new UnauthorizedException("Invalid password");
+            throw new UnauthorizedException("incorrect email or password");
         }
 
         refreshTokenRepository.deleteByUser(user);
@@ -108,25 +108,20 @@ public class AuthService {
         );
     }
 
+    @Transactional(readOnly = true)
     public AuthResponse refresh(TokenRequest request) {
         RefreshToken storedToken = refreshTokenRepository.findByToken(request.token())
                 .orElseThrow(() -> new UnauthorizedException("Token not found"));
 
         if (storedToken.getExpiresAt().isBefore(Instant.now())) {
-            refreshTokenRepository.delete(storedToken);
             throw new UnauthorizedException("Token expired");
         }
 
         User user = storedToken.getUser();
 
-        refreshTokenRepository.delete(storedToken);
-
         String newAccess = jwtService.generateAccessToken(user);
-        String newRefresh = jwtService.generateRefreshToken(user);
 
-        saveRefreshToken(user, newRefresh);
-
-        return new AuthResponse(true, newRefresh, newAccess, null);
+        return new AuthResponse(true, storedToken.getToken(), newAccess, null);
     }
 
     public SuccessResponse logout(TokenRequest request, Authentication authentication) {

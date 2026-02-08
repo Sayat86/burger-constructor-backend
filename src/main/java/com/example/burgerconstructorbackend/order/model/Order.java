@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.Generated;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -22,11 +23,12 @@ public class Order {
     private UUID id = UUID.randomUUID();
 
     @Column(nullable = false)
-    private String status;
+    private OrderStatus status;
     private String name;
 
+    @Generated
     @Column(nullable = false, unique = true, insertable = false, updatable = false)
-    private int number;
+    private Integer number;
 
     @Column(name = "created_at", nullable = false)
     @CreationTimestamp

@@ -4,6 +4,7 @@ import com.example.burgerconstructorbackend.ingredient.model.Ingredient;
 import com.example.burgerconstructorbackend.ingredient.repository.IngredientRepository;
 import com.example.burgerconstructorbackend.order.dto.*;
 import com.example.burgerconstructorbackend.order.model.Order;
+import com.example.burgerconstructorbackend.order.model.OrderStatus;
 import com.example.burgerconstructorbackend.order.repository.OrderRepository;
 import com.example.burgerconstructorbackend.order_ingredient.OrderIngredient;
 import com.example.burgerconstructorbackend.order_ingredient.OrderIngredientKey;
@@ -103,7 +104,7 @@ public class OrderServiceImpl implements OrderService {
 
         Order order = new Order();
         order.setUser(user);
-        order.setStatus("created");
+        order.setStatus(OrderStatus.PENDING);
         order.setName(user.getName());
 
         for (Ingredient ing : ingredients) {

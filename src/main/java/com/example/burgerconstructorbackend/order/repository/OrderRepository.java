@@ -1,6 +1,7 @@
 package com.example.burgerconstructorbackend.order.repository;
 
 import com.example.burgerconstructorbackend.order.model.Order;
+import com.example.burgerconstructorbackend.order.model.OrderStatus;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -42,6 +43,8 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     @EntityGraph(attributePaths = {"orderIngredients", "orderIngredients.ingredient"})
     Optional<Order> findWithIngredientsById(UUID id);
+
+    List<Order> findByStatusAndCreatedAtBefore(OrderStatus status, LocalDateTime createdAt);
 }
 
 

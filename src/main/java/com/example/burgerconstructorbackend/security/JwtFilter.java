@@ -1,6 +1,8 @@
 package com.example.burgerconstructorbackend.security;
 
 import com.example.burgerconstructorbackend.user.repository.UserRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -34,16 +36,29 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String header = request.getHeader("Authorization");
 
-        if (header != null && header.startsWith("Bearer ")) {
-            String token = header.substring(7);
+        String token = null;
+        if (header != null && !header.isBlank()) {
+            header = header.trim();
+            if (header.startsWith("Bearer ")) {
+                token = header.substring(7).trim();
+            } else {
+                token = header;
+            }
+        }
 
+        if (token != null && token.isBlank()) {
+            request.setAttribute("jwtError", "invalid token");
+        } else if (token != null) {
             try {
-                if (jwtService.isTokenValid(token)
-                        && "access".equals(jwtService.extractType(token))) {
+                Claims claims = jwtService.extractClaims(token);
+                String tokenType = claims.get("type", String.class);
+                
+                if (!"access".equals(tokenType)) {
+                    request.setAttribute("jwtError", "invalid token");
+                } else {
+                    String email = claims.getSubject();
 
-                    String email = jwtService.extractEmail(token);
-
-                    userRepository.findByEmail(email).ifPresent(user -> {
+                    userRepository.findByEmail(email).ifPresentOrElse(user -> {
 
                         List<GrantedAuthority> authorities =
                                 List.of(new SimpleGrantedAuthority("ROLE_USER"));
@@ -63,23 +78,16 @@ public class JwtFilter extends OncePerRequestFilter {
                         SecurityContextHolder
                                 .getContext()
                                 .setAuthentication(auth);
-                    });
+                    }, () -> request.setAttribute("jwtError", "invalid token"));
                 }
-            } catch (JwtException ignored) {
+            } catch (ExpiredJwtException e) {
+                request.setAttribute("jwtError", "jwt expired");
+            } catch (JwtException | IllegalArgumentException e) {
+                request.setAttribute("jwtError", "invalid token");
             }
         }
 
         filterChain.doFilter(request, response);
     }
-
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        String path = request.getServletPath();
-        return path.startsWith("/auth/")
-                || path.startsWith("/swagger-ui/")
-                || path.startsWith("/v3/api-docs")
-                || path.equals("/swagger-ui.html");
-    }
 }
-
 
